@@ -1,0 +1,1 @@
+# reconhecimentoVoz_python
