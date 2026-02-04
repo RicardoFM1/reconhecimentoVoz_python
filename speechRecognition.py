@@ -1,41 +1,61 @@
+from email.mime import audio
 import speech_recognition as sr
 import time
+import tkinter as tk
 import webbrowser
 
-reconhecimento = sr.Recognizer()
+janela = tk.Tk()
+janela.title("Assistente de Voz")
 
-with sr.Microphone() as source:
-    print("Diga algo legal:")
-    audio = reconhecimento.listen(source)
+def processar_reconhecimento():
+    reconhecimento = sr.Recognizer()
 
-try:
-   
-    texto = reconhecimento.recognize_google(audio, language="pt-BR")
-    print("Você disse:", texto)
+    with sr.Microphone() as source:
+        print("Diga algo legal:")
+        audio = reconhecimento.listen(source)
 
-   
-    texto_pesquisa = texto.lower()
+    try:
+        texto = reconhecimento.recognize_google(audio, language="pt-BR")
+        print("Você disse:", texto)
 
-    palavras_remover = ["google", "navegador", "youtube"]
+        texto_pesquisa = texto.lower()
 
-    for palavra in palavras_remover:
-        texto_pesquisa = texto_pesquisa.replace(palavra, "")
+        palavras_remover = ["google", "navegador", "youtube"]
 
-    texto_pesquisa = texto_pesquisa.strip()
+        for palavra in palavras_remover:
+            texto_pesquisa = texto_pesquisa.replace(palavra, "")
 
-    if "navegador" in texto.lower() or "google" in texto.lower():
-        print("Abrindo navegador...")
-        time.sleep(1)
-        webbrowser.open(
-            "https://google.com/search?q=" + texto_pesquisa
-        )
+        texto_pesquisa = texto_pesquisa.strip()
 
-    elif "youtube" in texto.lower():
-        print("Abrindo YouTube...")
-        time.sleep(1)
-        webbrowser.open_new_tab(
-            f"https://www.youtube.com/results?search_query={texto_pesquisa}"
-        )
+        if "navegador" in texto.lower() or "google" in texto.lower():
+            print("Abrindo navegador...")
+            labelStatus = tk.Label(janela, text="Abrindo navegador...")
+            labelStatus.pack(pady=10)
+            time.sleep(1)
+            webbrowser.open(
+                "https://google.com/search?q=" + texto_pesquisa
+            )
+            labelStatus.after(3000, labelStatus.destroy)
 
-except sr.UnknownValueError:
-    print("Não entendi o que quis dizer, tente novamente!")
+        elif "youtube" in texto.lower():
+            print("Abrindo YouTube...")
+            labelStatusYoutube = tk.Label(janela, text="Abrindo YouTube...")
+            labelStatusYoutube.pack(pady=10)
+            time.sleep(1)
+            webbrowser.open_new_tab(
+                f"https://www.youtube.com/results?search_query={texto_pesquisa}"
+            )
+            labelStatusYoutube.after(3000, labelStatusYoutube.destroy)
+
+    except sr.UnknownValueError:
+        print("Não entendi o que quis dizer, tente novamente!")
+
+
+
+label = tk.Label(janela, text="Clique no botão e fale algo")
+label.pack(pady=10)
+button = tk.Button(janela, text="Falar", command=processar_reconhecimento)
+button.pack(pady=10)
+
+janela.mainloop()
+
